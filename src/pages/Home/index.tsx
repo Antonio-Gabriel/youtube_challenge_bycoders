@@ -1,3 +1,9 @@
+import { IUserProps } from "../../types/IUserProps";
+
 export function Home() {
-  return <h2>Home</h2>;
+  const user = JSON.parse(
+    localStorage.getItem("bycoders-user") ?? ""
+  ) as IUserProps;
+
+  return <h2>Home, {console.log(user.name)} </h2>;
 }
