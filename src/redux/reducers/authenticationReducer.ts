@@ -2,8 +2,8 @@ import { IAuthState } from "../../types/IAuthState";
 import { ENUMS } from "../actions/types/types";
 
 const initialState: IAuthState = {
-  accessToken: sessionStorage.getItem("accessToken") ?? null,
-  user: sessionStorage.getItem("user") ?? null,
+  accessToken: localStorage.getItem("bycoders-accessToken") ?? null,
+  user: localStorage.getItem("bycoders-user") ?? null,
   loading: false,
 };
 
