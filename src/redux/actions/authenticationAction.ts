@@ -1,5 +1,6 @@
 import firebase from "firebase/compat/app";
 import { authentication } from "../../services/firebase/firebaseConfig";
+import { saveCredentialsInStorage } from "../../utils/saveCredentialsInStorage";
 
 import { ENUMS } from "./types/types";
 
@@ -21,6 +22,8 @@ export const signIn = () => async (dispatch: any) => {
         name: authResponse.user?.displayName,
         photo: authResponse.user?.photoURL,
       };
+
+      saveCredentialsInStorage({ accessToken: accessToken, user: profile });
 
       dispatch({
         type: ENUMS.SUCESS,
