@@ -1,6 +1,7 @@
+import { IAuthState } from "../../types/IAuthState";
 import { ENUMS } from "../actions/types/types";
 
-const initialState = {
+const initialState: IAuthState = {
   accessToken: null,
   user: null,
   loading: false,

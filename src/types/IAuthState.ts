@@ -1,4 +1,5 @@
 export type IAuthState = {
-  credentials?: object | null;
-  user?: object | null;
+  accessToken?: string | null;
+  user?: string | null;
+  loading?: boolean;
 };
