@@ -3,9 +3,9 @@ export function saveCredentialsInStorage(props: any) {
     const element = props[key];
 
     if (typeof element === "object") {
-      sessionStorage.setItem(`${key}`, JSON.stringify(element));
+      localStorage.setItem(`${key}`, JSON.stringify(element));
     } else {
-      sessionStorage.setItem(`${key}`, element);
+      localStorage.setItem(`${key}`, element);
     }
   }
 }
