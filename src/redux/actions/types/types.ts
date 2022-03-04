@@ -6,4 +6,13 @@ const actionTypes = {
   LOADPROFILE: 200,
 };
 
-export const ENUMS = Object.freeze(actionTypes);
+const videoTypes = {
+  SUCESS: 200,
+  FAIL: 400,
+  REQUEST: 102,
+};
+
+const ENUMS = Object.freeze(actionTypes);
+const ENUMS_VIDEOS = Object.freeze(videoTypes);
+
+export { ENUMS, ENUMS_VIDEOS };
