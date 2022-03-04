@@ -1,0 +1,22 @@
+.videos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+
+  list-style: none;
+  padding: 0;
+}
+
+.videos li {
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.videos li img {
+  margin-bottom: 8px;
+}
+
+.videos li:hover span {
+  color: red;
+}
