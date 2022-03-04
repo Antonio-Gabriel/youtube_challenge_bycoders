@@ -11,6 +11,8 @@ export const signIn = () => async (dispatch: any) => {
     });
 
     const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/youtube.upload");
+
     const authResponse = await authentication.signInWithPopup(provider);
 
     if (authResponse) {
@@ -48,4 +50,15 @@ export const signIn = () => async (dispatch: any) => {
       });
     }
   }
+};
+
+export const signOut = () => async (dispatch: any) => {
+  dispatch({
+    type: ENUMS.LOGOUT,
+  });
+
+  await authentication.signOut();
+
+  localStorage.removeItem("bycoders-accessToken");
+  localStorage.removeItem("bycoders-user");
 };
