@@ -1,3 +1,4 @@
+import { IActionProps } from "../../types/IActionProps";
 import { IAuthState } from "../../types/IAuthState";
 import { ENUMS } from "../actions/types/types";
 
@@ -7,7 +8,10 @@ const initialState: IAuthState = {
   loading: false,
 };
 
-export function authenticateReducer(prevState = initialState, action: any) {
+export function authenticateReducer(
+  prevState = initialState,
+  action: IActionProps
+) {
   const { type, payload } = action;
 
   switch (type) {
@@ -43,6 +47,7 @@ export function authenticateReducer(prevState = initialState, action: any) {
         ...prevState,
         accessToken: null,
         user: null,
+        loading: false,
       };
 
     default:
