@@ -1,13 +1,13 @@
 import { getVideoServices } from "../../services/getVideosService";
 import { ENUMS_VIDEOS } from "./types/types";
 
-export const getVideoActions = () => async (dispatch: any) => {
+export const getVideoActions = () => async (dispatch: any, getState: any) => {
   try {
     dispatch({
       type: ENUMS_VIDEOS.REQUEST,
     });
 
-    const response = await getVideoServices();
+    const response = await getVideoServices(getState().videos.nextPageToken);
 
     if (response) {
       dispatch({
