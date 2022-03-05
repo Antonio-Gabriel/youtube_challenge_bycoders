@@ -21,6 +21,7 @@ export const signIn = () => async (dispatch: any) => {
       const accessToken = creadentials.accessToken;
 
       const profile = {
+        id: authResponse.user?.uid,
         name: authResponse.user?.displayName,
         photo: authResponse.user?.photoURL,
       };
