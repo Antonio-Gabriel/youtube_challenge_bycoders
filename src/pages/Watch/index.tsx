@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getRelatedVideosActions } from "../../redux/actions/getRelatedVideosAction";
+import { useDispatch, useSelector } from "react-redux";
 import { IVideoPropsState } from "../../types/IVideoPropsState";
+import { getRelatedVideosActions } from "../../redux/actions/getRelatedVideosAction";
 
 export function Watch() {
   const { id } = useParams();
@@ -19,8 +19,6 @@ export function Watch() {
 
   return (
     <section className="container">
-      {console.log(videos)}
-
       <div className="row">
         <div className="col-lg-8">
           <iframe
@@ -35,7 +33,23 @@ export function Watch() {
             width="1"
           ></iframe>
         </div>
-        <div className="col-lg-4"></div>
+        <div className="col-lg-4">
+          <div className="related-videos">
+            <div className="row">
+              {videos.map((video: any) => (
+                <div className="col-lg-12">
+                  <div className="video-card">
+                    <img
+                      src={video.snippet?.thumbnails.medium.url}
+                      alt={video.snippet?.title}
+                    />
+                    <p>{video.snippet?.title}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
