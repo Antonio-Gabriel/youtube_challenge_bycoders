@@ -1,3 +1,7 @@
+ul {
+  padding: 0 !important;
+}
+
 .videos {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -5,6 +9,7 @@
 
   list-style: none;
   padding: 0;
+  overflow: hidden !important;
 }
 
 .videos li {
@@ -19,4 +24,10 @@
 
 .videos li:hover span {
   color: red;
+}
+
+.video-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
