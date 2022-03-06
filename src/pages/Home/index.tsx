@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { formatDuration } from "../../utils/formatDuration";
+import { IVideoPropsState } from "../../types/IVideoPropsState";
 import { signOut } from "../../redux/actions/authenticationAction";
 import { getVideoActions } from "../../redux/actions/getVideoAction";
-import { IVideoPropsState } from "../../types/IVideoPropsState";
-
-import { formatDuration } from "../../utils/formatDuration";
+import { SyntheticEvent, useEffect, useState } from "react";
 
 import numeral from "numeral";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { getVideoServices } from "../../services/getVideosService";
 import { getUniqueElementsFromList } from "../../utils/getUniqueIdFromList";
+import { getFilterVideosService } from "../../services/getFilterVideosService";
+import { deleteSelectedCache } from "../../services/caching/deleteSelectedCache";
+import { getAllCachesInMemory } from "../../services/caching/getAllCachesInMemory";
+import { saveFilterHistoryInMemoryCache } from "../../services/caching/saveFilterHistoryInMemoryCache";
 
 import "./styles.css";
 
@@ -19,6 +22,8 @@ export function Home() {
   const dispatch = useDispatch();
   const navigateTo = useNavigate();
 
+  const [search, setSearch] = useState("");
+  const [sugestions, setSugestions] = useState([]);
   const [valueList, setValueList] = useState<any>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
@@ -26,7 +31,7 @@ export function Home() {
     dispatch(getVideoActions());
   }, [dispatch]);
 
-  const { loading, totalResult, nextPageToken } = useSelector<IVideoPropsState>(
+  const { totalResult, nextPageToken } = useSelector<IVideoPropsState>(
     (state) => state.videos
   ) as any;
 
@@ -56,8 +61,28 @@ export function Home() {
     if (valueList.length === totalResult) {
       setHasMore(false);
     }
+  }
 
-    console.table(valueList);
+  async function handleSubmitForm(event: SyntheticEvent) {
+    event.preventDefault();
+
+    if (search) {
+      await saveFilterHistoryInMemoryCache({
+        search,
+      });
+
+      navigateTo(`/results?search_query=${search}`);
+    }
+  }
+
+  async function handleChangeFilterValue(filterValue: string) {
+    setSearch(filterValue);
+    if (search) {
+      const filterValues = await getFilterVideosService(search);
+      setSugestions(filterValues.items);
+    } else {
+      setSugestions([]);
+    }
   }
 
   return (
@@ -65,7 +90,27 @@ export function Home() {
       <h2>Home</h2>
       <span>
         <strong>Total Results: </strong> {totalResult}
+        <button onClick={handleLogout}>logout</button>
       </span>
+
+      <form onSubmit={handleSubmitForm}>
+        <div className="search">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => handleChangeFilterValue(e.target.value)}
+          />
+
+          <div className="autoCompleteSugestions">
+            <ul>
+              {sugestions.map((suggestion: any, index: number) => (
+                <li key={index}>{suggestion.snippet?.title}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </form>
+
       <ul className="videos">
         <InfiniteScroll
           dataLength={valueList.length}
@@ -82,7 +127,10 @@ export function Home() {
               key={video.id}
               onClick={() => handlePreviewVideoDetails(video.id)}
             >
-              <img src={video.snippet.thumbnails.medium.url} />
+              <img
+                src={video.snippet.thumbnails.medium.url}
+                alt={video.snippet.title}
+              />
               <span>{video.snippet.title}</span>
               <div className="video-footer">
                 <strong>{formatDuration(video.contentDetails.duration)}</strong>
@@ -94,8 +142,6 @@ export function Home() {
           ))}
         </InfiniteScroll>
       </ul>
-
-      <button onClick={handleLogout}>logout</button>
     </div>
   );
 }
