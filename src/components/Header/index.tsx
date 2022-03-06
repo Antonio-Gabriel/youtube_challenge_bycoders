@@ -2,8 +2,8 @@ import { MdSearch } from "react-icons/md";
 import { AiOutlineUser } from "react-icons/ai";
 
 import { useNavigate } from "react-router-dom";
-import { SyntheticEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { Actions, AutoComplete, HeaderContent } from "./styles";
 import { signIn } from "../../redux/actions/authenticationAction";
 import { getFilterVideosService } from "../../services/getFilterVideosService";
@@ -11,6 +11,7 @@ import { getFilterVideosService } from "../../services/getFilterVideosService";
 export function Header() {
   const [search, setSearch] = useState("");
   const [sugestions, setSugestions] = useState([]);
+  const [openSugestionsModal, setOpenSugestionsModal] = useState(false);
 
   const dispatch = useDispatch();
   const navigateTo = useNavigate();
@@ -21,16 +22,30 @@ export function Header() {
     dispatch(signIn());
   }
 
+  useEffect(() => {
+    if (!search) {
+      setSugestions([]);
+    }
+  }, [search]);
+
+  useEffect(() => {
+    if (!sugestions.length) {
+      window.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        setOpenSugestionsModal(false);
+      });
+    }
+  }, [window]);
+
   async function handleChangeFilterValue(filterValue: string) {
     setSearch(filterValue);
 
     if (search) {
       const filterValues = await getFilterVideosService(search);
 
-      console.log(filterValues);
+      setOpenSugestionsModal(true);
       setSugestions(filterValues.items);
-    } else {
-      setSugestions([]);
     }
   }
 
@@ -67,7 +82,7 @@ export function Header() {
             </button>
           </div>
 
-          {!!sugestions.length && (
+          {openSugestionsModal && !!sugestions.length && (
             <AutoComplete>
               <ul>
                 {sugestions.map((suggestion: any, index: number) => (
