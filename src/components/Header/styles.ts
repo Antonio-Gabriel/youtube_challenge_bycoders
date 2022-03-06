@@ -95,6 +95,7 @@ export const AutoComplete = styled.div`
   ul li {
     + li {
       margin-top: 4px;
+      cursor: pointer;
     }
 
     a {
@@ -105,6 +106,7 @@ export const AutoComplete = styled.div`
       padding: 4px 10px;
       border-radius: 4px;
       color: var(--dark-400) !important;
+      cursor: pointer;
 
       a {
         font-size: 12px;
