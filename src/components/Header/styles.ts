@@ -65,6 +65,10 @@ export const Actions = styled.div`
     font-weight: 500 !important;
     cursor: pointer;
 
+    // background-color: var(--dark-600);
+    padding: 9px 16px;
+    border-radius: 4px;
+
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -77,7 +81,7 @@ export const Actions = styled.div`
     transition: all 0.3s;
 
     :hover {
-      color: var(--dark-400) !important;
+      filter: brightness(0.8);
     }
   }
 `;
