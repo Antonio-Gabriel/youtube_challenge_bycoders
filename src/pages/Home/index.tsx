@@ -9,6 +9,7 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import numeral from "numeral";
 import InfiniteScroll from "react-infinite-scroll-component";
 
+import { ENUMS } from "../../redux/actions/types/types";
 import { getVideoServices } from "../../services/getVideosService";
 import { getUniqueElementsFromList } from "../../utils/getUniqueIdFromList";
 import { getFilterVideosService } from "../../services/getFilterVideosService";
@@ -37,6 +38,17 @@ export function Home() {
 
   useEffect(() => {
     getVideoServices(nextPageToken).then((res) => setValueList(res.items));
+  }, []);
+
+  useEffect(() => {
+    if (!localStorage.getItem("bycoders-accessToken")) {
+      navigateTo("/login");
+
+      dispatch({
+        type: ENUMS.FAIL,
+        error: "Pleace sign in for continue",
+      });
+    }
   }, []);
 
   function handleLogout() {
