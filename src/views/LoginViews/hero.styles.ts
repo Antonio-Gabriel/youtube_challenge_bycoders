@@ -49,7 +49,7 @@ export const Content = styled.section`
 
     p {
       max-width: 32rem;
-      
+
       color: var(--dark-600);
     }
   }
