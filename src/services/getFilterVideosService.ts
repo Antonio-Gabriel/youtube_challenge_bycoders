@@ -8,7 +8,7 @@ export async function getFilterVideosService(
     await api.get("/search", {
       params: {
         part: "snippet",
-        maxResults: 10,
+        maxResults: 8,
         pageToken: token,
         q: search,
         type: "video",
