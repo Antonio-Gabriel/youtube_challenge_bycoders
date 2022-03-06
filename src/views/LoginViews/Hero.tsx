@@ -16,9 +16,8 @@ export function HeroView() {
               your smile.
             </h1>
             <p>
-              Plataforma de compartilhamento de vídeos com sede em San Bruno,
-              Califórnia. O serviço foi criado por três ex-funcionários do
-              PayPal
+              Video sharing platform based in San Bruno, California. The service
+              was created by three former PayPal employees
             </p>
             <div className="buttons">
               <button>Start watch the videos</button>
