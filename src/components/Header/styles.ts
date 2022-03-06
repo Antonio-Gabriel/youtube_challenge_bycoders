@@ -39,7 +39,8 @@ export const HeaderContent = styled.header`
     }
 
     .input-group-text {
-      background-color: var(--dark-600) !important;
+      background-color: #2c2c2c;
+      border: 2px solid #373737 !important;
       padding: 0.375rem 1.8rem;
       border-radius: 10px;
       border: none;
@@ -59,15 +60,21 @@ export const Actions = styled.div`
   display: flex;
   gap: 20px;
 
+  .signIn.process {
+    background-color: #373737 !important;
+    cursor: not-allowed;
+    filter: brightness(0.8);
+  }
+
   > a {
     color: var(--gray-100) !important;
     font-size: 1rem;
     font-weight: 500 !important;
     cursor: pointer;
 
-    // background-color: var(--dark-600);
+    background-color: #373737;
     padding: 9px 16px;
-    border-radius: 4px;
+    border-radius: 10px;
 
     display: inline-flex;
     align-items: center;
