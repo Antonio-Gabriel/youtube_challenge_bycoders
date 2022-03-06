@@ -1,14 +1,18 @@
 import { MdSearch } from "react-icons/md";
-import { AiOutlineUser } from "react-icons/ai";
+import { AiOutlineGoogle, AiOutlineUser } from "react-icons/ai";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { Actions, AutoComplete, HeaderContent } from "./styles";
 import { signIn } from "../../redux/actions/authenticationAction";
 import { getFilterVideosService } from "../../services/getFilterVideosService";
 
-export function Header() {
+type IFormProps = {
+  filter?: string;
+};
+
+export function Header({ filter = "" }: IFormProps) {
   const [search, setSearch] = useState("");
   const [sugestions, setSugestions] = useState([]);
   const [openSugestionsModal, setOpenSugestionsModal] = useState(false);
@@ -21,6 +25,12 @@ export function Header() {
   function handleSignInWithGoogle() {
     dispatch(signIn());
   }
+
+  useEffect(() => {
+    if (!search) {
+      setSearch(filter);
+    }
+  }, []);
 
   useEffect(() => {
     if (!search) {
@@ -60,14 +70,14 @@ export function Header() {
   return (
     <HeaderContent>
       <div className="container">
-        <a href="/login" className="logo">
+        <Link to="/login" className="logo">
           <img
             src="/src/assets/YouTube-White-Full-Color-Logo.wine.svg"
             alt="Youtube"
           />
-        </a>
+        </Link>
 
-        <form className="search" onSubmit={handleSubmitForm} autoComplete="off">
+        <form className="search" autoComplete="off">
           <div className="input-group">
             <input
               type="text"
@@ -77,7 +87,7 @@ export function Header() {
               className="form-control"
               onChange={(e) => handleChangeFilterValue(e.target.value)}
             />
-            <button className="input-group-text">
+            <button className="input-group-text" onClick={handleSubmitForm}>
               <MdSearch />
             </button>
           </div>
@@ -106,11 +116,14 @@ export function Header() {
 
         <Actions>
           {loading ? (
-            <span>Autenticando...</span>
+            <a className="signIn process" onClick={handleSignInWithGoogle}>
+              <AiOutlineUser />
+              validating...
+            </a>
           ) : (
             <a className="signIn" onClick={handleSignInWithGoogle}>
-              <AiOutlineUser />
-              SIGN IN
+              <AiOutlineGoogle />
+              Sign in with google
             </a>
           )}
         </Actions>
