@@ -1,0 +1,48 @@
+.offcanvas.offcanvas-start {
+  width: 260px !important;
+
+  background: var(--body);
+
+  .btn-close {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
+    box-shadow: none;
+  }
+
+  .offcanvas-header {
+    padding: 0 !important;
+    padding-right: 1.2rem !important;
+
+    .offcanvas-title {
+      img {
+        height: 70px;
+      }
+    }
+  }
+
+  .offcanvas-body {
+    .list {
+      padding: 0 !important;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      a {
+        width: 100% !important;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: var(--white);
+        font-weight: 500;
+
+        :hover {
+          color: var(--dark-600) !important;
+        }
+
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+  }
+}
