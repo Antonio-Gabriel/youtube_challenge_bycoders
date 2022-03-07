@@ -1,65 +1,40 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDuration } from "../../utils/formatDuration";
 import { IVideoPropsState } from "../../types/IVideoPropsState";
-import { signOut } from "../../redux/actions/authenticationAction";
 import { getVideoActions } from "../../redux/actions/getVideoAction";
-import { SyntheticEvent, useEffect, useState } from "react";
 
+import moment from "moment";
 import numeral from "numeral";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-import { ENUMS } from "../../redux/actions/types/types";
+import { Content } from "./styles";
+import { Header } from "../../components/Header";
+import { SmallVideo } from "../../components/SmallVideo";
 import { getVideoServices } from "../../services/getVideosService";
 import { getUniqueElementsFromList } from "../../utils/getUniqueIdFromList";
-import { getFilterVideosService } from "../../services/getFilterVideosService";
-import { deleteSelectedCache } from "../../services/caching/deleteSelectedCache";
-import { getAllCachesInMemory } from "../../services/caching/getAllCachesInMemory";
-import { saveFilterHistoryInMemoryCache } from "../../services/caching/saveFilterHistoryInMemoryCache";
 
-import "./styles.css";
+import "./styles.scss";
 
 export function Home() {
   const dispatch = useDispatch();
   const navigateTo = useNavigate();
 
-  const [search, setSearch] = useState("");
-  const [sugestions, setSugestions] = useState([]);
   const [valueList, setValueList] = useState<any>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  useEffect(() => {
-    dispatch(getVideoActions());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getVideoActions());
+  // }, [dispatch]);
 
   const { totalResult, nextPageToken } = useSelector<IVideoPropsState>(
     (state) => state.videos
   ) as any;
 
-  useEffect(() => {
-    getVideoServices(nextPageToken).then((res) => setValueList(res.items));
-  }, []);
-
-  useEffect(() => {
-    if (!localStorage.getItem("bycoders-accessToken")) {
-      navigateTo("/login");
-
-      dispatch({
-        type: ENUMS.FAIL,
-        error: "Pleace sign in for continue",
-      });
-    }
-  }, []);
-
-  function handleLogout() {
-    dispatch(signOut());
-
-    navigateTo("/login");
-  }
-
-  function handlePreviewVideoDetails(id: string) {
-    navigateTo(`/watch/${id}`);
-  }
+  // useEffect(() => {
+  //   getVideoServices(nextPageToken).then((res) => setValueList(res.items));
+  // }, []);
 
   async function handleCarriesNextVideos() {
     dispatch(getVideoActions());
@@ -75,85 +50,57 @@ export function Home() {
     }
   }
 
-  async function handleSubmitForm(event: SyntheticEvent) {
-    event.preventDefault();
-
-    if (search) {
-      await saveFilterHistoryInMemoryCache({
-        search,
-      });
-
-      navigateTo(`/results?search_query=${search}`);
-    }
-  }
-
-  async function handleChangeFilterValue(filterValue: string) {
-    setSearch(filterValue);
-    if (search) {
-      const filterValues = await getFilterVideosService(search);
-      setSugestions(filterValues.items);
-    } else {
-      setSugestions([]);
-    }
+  function handleWatchingVideo(id: string) {
+    navigateTo(`/watch/${id}`);
   }
 
   return (
-    <div>
-      <h2>Home</h2>
-      <span>
-        <strong>Total Results: </strong> {totalResult}
-        <button onClick={handleLogout}>logout</button>
-      </span>
+    <>
+      <Header />
 
-      <form onSubmit={handleSubmitForm}>
-        <div className="search">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => handleChangeFilterValue(e.target.value)}
-          />
+      <Content>
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12 pupular-videos">
+              <h4>Popular Videos</h4>
+            </div>
+          </div>
 
-          <div className="autoCompleteSugestions">
-            <ul>
-              {sugestions.map((suggestion: any, index: number) => (
-                <li key={index}>{suggestion.snippet?.title}</li>
-              ))}
-            </ul>
+          <div className="col-lg-12">
+            <InfiniteScroll
+              dataLength={valueList.length}
+              next={handleCarriesNextVideos}
+              hasMore={hasMore}
+              loader={
+                <div className="spinner-border text-danger d-block mx-auto text-center"></div>
+              }
+              endMessage={<span>Reload the page</span>}
+              className="videos"
+            >
+              <div className="row">
+                {valueList.map((video: any) => (
+                  <div
+                    className="col-lg-3 mb-4"
+                    key={video.id}
+                    onClick={() => handleWatchingVideo(video.id)}
+                  >
+                    <SmallVideo
+                      thumbnail={video.snippet.thumbnails.medium.url}
+                      duraction={formatDuration(video.contentDetails.duration)}
+                      title={video.snippet.title}
+                      views={numeral(video.statistics.viewCount).format("0.a")}
+                      publishedAt={moment(video.snippet.publishedAt).fromNow()}
+                      channelName="Freshly Baked"
+                      channelThumbnail="/src/assets/channels4_profile.jpg"
+                      width={260}
+                    />
+                  </div>
+                ))}
+              </div>
+            </InfiniteScroll>
           </div>
         </div>
-      </form>
-
-      <ul className="videos">
-        <InfiniteScroll
-          dataLength={valueList.length}
-          next={handleCarriesNextVideos}
-          hasMore={hasMore}
-          loader={
-            <div className="spinner-border text-danger d-block mx-auto"></div>
-          }
-          endMessage={<h1>Final list</h1>}
-          className="videos"
-        >
-          {valueList.map((video: any) => (
-            <li
-              key={video.id}
-              onClick={() => handlePreviewVideoDetails(video.id)}
-            >
-              <img
-                src={video.snippet.thumbnails.medium.url}
-                alt={video.snippet.title}
-              />
-              <span>{video.snippet.title}</span>
-              <div className="video-footer">
-                <strong>{formatDuration(video.contentDetails.duration)}</strong>
-                <span>
-                  {numeral(video.statistics.viewCount).format("0.a")} views
-                </span>
-              </div>
-            </li>
-          ))}
-        </InfiniteScroll>
-      </ul>
-    </div>
+      </Content>
+    </>
   );
 }
