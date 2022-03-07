@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Content } from "./hero.styles";
 
 export function HeroView() {
@@ -20,11 +21,13 @@ export function HeroView() {
               was created by three former PayPal employees
             </p>
             <div className="buttons">
-              <button>Start watch the videos</button>
+              <Link to="/">
+                <button>Start watch the videos</button>
+              </Link>
             </div>
 
             <small>
-              Hi! 👋 Here is YouTube Premium page redesign. What do you think?
+              Hi! 👋 Here is YouTube Challenge page redesign. What do you think?
             </small>
           </div>
 
