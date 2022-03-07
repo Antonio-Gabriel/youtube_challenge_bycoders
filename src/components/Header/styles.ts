@@ -1,15 +1,39 @@
 import styled from "styled-components";
 
 export const HeaderContent = styled.header`
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background: var(--body);
+  z-index: 99;
+
   > .container {
     display: flex;
     align-items: center;
   }
 
-  .logo img {
-    height: 90px;
-    margin-left: -1rem;
-    margin-right: 1.5rem;
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--white);
+      transition: all 0.1s;
+      cursor: pointer;
+
+      :hover {
+        fill: var(--dark-600);
+      }
+    }
+
+    img {
+      height: 90px;
+      margin-left: -1rem;
+      margin-right: 1.5rem;
+    }
   }
 
   .search {
@@ -66,6 +90,38 @@ export const Actions = styled.div`
     filter: brightness(0.8);
   }
 
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    li {
+      .history {
+        a {
+          color: #212529;
+        }
+      }
+
+      + li {
+        .dropdown {
+          background: none !important;
+
+          button {
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+
+            img {
+              width: 36px;
+              height: 36px;
+              border-radius: 50%;
+            }
+          }
+        }
+      }
+    }
+  }
+
   > a {
     color: var(--gray-100) !important;
     font-size: 1rem;
@@ -95,13 +151,17 @@ export const Actions = styled.div`
 
 export const AutoComplete = styled.div`
   margin-top: 4px;
-  padding: 18px 10px 4px;
+  padding: 18px 14px 4px;
   position: absolute;
   width: 100%;
   border-radius: 6px;
   background-color: #2c2c2c;
   z-index: 99;
   box-shadow: 10px 8px 10px 8px rgb(0 0 0 / 03%) !important;
+
+  ul {
+    padding-left: 0 !important;
+  }
 
   ul li {
     + li {
