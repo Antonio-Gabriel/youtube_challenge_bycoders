@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
 export const Content = styled.section`
+  margin-top: 6.5rem;
+
   .text-content {
     display: flex;
     flex-direction: column;
