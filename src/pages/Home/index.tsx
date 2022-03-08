@@ -13,6 +13,7 @@ import { Content } from "./styles";
 import { Header } from "../../components/Header";
 import { SmallVideo } from "../../components/SmallVideo";
 import { getVideoServices } from "../../services/getVideosService";
+import { getChannelByIdService } from "../../services/getChannelById";
 import { getUniqueElementsFromList } from "../../utils/getUniqueIdFromList";
 
 import "./styles.scss";
@@ -24,24 +25,65 @@ export function Home() {
   const [valueList, setValueList] = useState<any>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  // useEffect(() => {
-  //   dispatch(getVideoActions());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getVideoActions());
+  }, [dispatch]);
 
   const { totalResult, nextPageToken } = useSelector<IVideoPropsState>(
     (state) => state.videos
   ) as any;
 
-  // useEffect(() => {
-  //   getVideoServices(nextPageToken).then((res) => setValueList(res.items));
-  // }, []);
+  useEffect(() => {
+    getVideoServices(nextPageToken).then((res) => {
+      const joinVideoByChannelResponse = res.items.map(async (video: any) => {
+        const channelData = await getChannelByIdService(
+          video.snippet.channelId
+        );
+
+        return {
+          id: video.id,
+          thumbnail: video.snippet.thumbnails.medium.url,
+          duraction: video.contentDetails.duration,
+          title: video.snippet.title,
+          views: video.statistics.viewCount,
+          publishedAt: video.snippet.publishedAt,
+          channelName: channelData.items[0].snippet.title,
+          channelThumbnail: channelData.items[0].snippet.thumbnails.default,
+        };
+      });
+
+      Promise.all(joinVideoByChannelResponse).then((res) => setValueList(res));
+    });
+  }, []);
 
   async function handleCarriesNextVideos() {
     dispatch(getVideoActions());
 
     const response = await getVideoServices(nextPageToken);
+    const joinVideoByChannelResponse = await response.items.map(
+      async (video: any) => {
+        const channelData = await getChannelByIdService(
+          video.snippet.channelId
+        );
 
-    const margeVideoList = [...valueList, ...response.items];
+        return {
+          id: video.id,
+          thumbnail: video.snippet.thumbnails.medium.url,
+          duraction: video.contentDetails.duration,
+          title: video.snippet.title,
+          views: video.statistics.viewCount,
+          publishedAt: video.snippet.publishedAt,
+          channelName: channelData.items[0].snippet.title,
+          channelThumbnail: channelData.items[0].snippet.thumbnails.default,
+        };
+      }
+    );
+
+    const nextPage = await Promise.all(joinVideoByChannelResponse).then(
+      (res) => res
+    );
+
+    const margeVideoList = [...valueList, ...nextPage];
 
     setValueList([...getUniqueElementsFromList(margeVideoList, "id")]);
 
@@ -85,13 +127,13 @@ export function Home() {
                     onClick={() => handleWatchingVideo(video.id)}
                   >
                     <SmallVideo
-                      thumbnail={video.snippet.thumbnails.medium.url}
-                      duraction={formatDuration(video.contentDetails.duration)}
-                      title={video.snippet.title}
-                      views={numeral(video.statistics.viewCount).format("0.a")}
-                      publishedAt={moment(video.snippet.publishedAt).fromNow()}
-                      channelName="Freshly Baked"
-                      channelThumbnail="/src/assets/channels4_profile.jpg"
+                      thumbnail={video.thumbnail}
+                      duraction={formatDuration(video.duraction)}
+                      title={video.title}
+                      views={numeral(video.views).format("0.a")}
+                      publishedAt={moment(video.publishedAt).fromNow()}
+                      channelName={video.channelName}
+                      channelThumbnail={video.channelThumbnail.url}
                       width={260}
                     />
                   </div>
