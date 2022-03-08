@@ -9,6 +9,9 @@ import { Actions, AutoComplete, HeaderContent } from "./styles";
 import { AiOutlineGoogle, AiOutlineUser } from "react-icons/ai";
 import { signIn, signOut } from "../../redux/actions/authenticationAction";
 import { getFilterVideosService } from "../../services/getFilterVideosService";
+import { deleteSelectedCache } from "../../services/caching/deleteSelectedCache";
+import { getAllCachesInMemory } from "../../services/caching/getAllCachesInMemory";
+import { saveFilterHistoryInMemoryCache } from "../../services/caching/saveFilterHistoryInMemoryCache";
 
 type IFormProps = {
   filter?: string;
@@ -20,6 +23,7 @@ export function Header({ filter = "" }: IFormProps) {
   const [search, setSearch] = useState("");
   const [sugestions, setSugestions] = useState([]);
   const [openOffCanvas, setOpenOffCanvas] = useState(false);
+  const [sugestionsInCache, setSugestionsInCache] = useState([]) as any;
   const [openSugestionsModal, setOpenSugestionsModal] = useState(false);
 
   const dispatch = useDispatch();
@@ -61,6 +65,7 @@ export function Header({ filter = "" }: IFormProps) {
       window.addEventListener("click", (e) => {
         e.preventDefault();
 
+        setSugestionsInCache([]);
         setOpenSugestionsModal(false);
       });
     }
@@ -72,6 +77,7 @@ export function Header({ filter = "" }: IFormProps) {
     if (search) {
       const filterValues = await getFilterVideosService(search);
 
+      setSugestionsInCache([]);
       setOpenSugestionsModal(true);
       setSugestions(filterValues.items);
     }
@@ -81,8 +87,34 @@ export function Header({ filter = "" }: IFormProps) {
     event.preventDefault();
 
     if (search) {
+      if (accessToken) {
+        saveFilterHistoryInMemoryCache({
+          search,
+        });
+      }
+
       navigateTo(`/results?search_query=${search}`);
     }
+  }
+
+  function handleCarriesDefaultHistories(event: SyntheticEvent) {
+    event.preventDefault();
+
+    if (!search) {
+      if (accessToken) {
+        getAllCachesInMemory().then((res) => {
+          const caches = res.filter((caches: any) => {
+            return (caches.userId = accessToken);
+          });
+
+          setSugestionsInCache(caches);
+        });
+      }
+    }
+  }
+
+  function handleRemoveHistory(id: number) {
+    deleteSelectedCache(id);
   }
 
   return (
@@ -90,7 +122,7 @@ export function Header({ filter = "" }: IFormProps) {
       <HeaderContent>
         <div className="container">
           <div className="logo">
-            {accessToken && <HiMenu onClick={() => setOpenOffCanvas(true)} />}
+            <HiMenu onClick={() => setOpenOffCanvas(true)} />
             <Link to="/login">
               <img
                 src="/src/assets/YouTube-White-Full-Color-Logo.wine.svg"
@@ -107,6 +139,7 @@ export function Header({ filter = "" }: IFormProps) {
                 value={search}
                 placeholder="Search"
                 className="form-control"
+                onClick={handleCarriesDefaultHistories}
                 onChange={(e) => handleChangeFilterValue(e.target.value)}
               />
               <button className="input-group-text" onClick={handleSubmitForm}>
@@ -127,7 +160,32 @@ export function Header({ filter = "" }: IFormProps) {
                         }}
                       >
                         {suggestion.snippet?.title}
-                        {/* <a href="#">Remove</a> */}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </AutoComplete>
+            )}
+
+            {!!sugestionsInCache.length && (
+              <AutoComplete>
+                <ul>
+                  {sugestionsInCache.map((suggestion: any, index: number) => (
+                    <li key={index} className="toComplete">
+                      <a
+                        onClick={() => {
+                          navigateTo(
+                            `/results?search_query=${suggestion.filterName}`
+                          );
+                        }}
+                      >
+                        {suggestion.filterName}
+                      </a>
+                      <a
+                        onClick={() => handleRemoveHistory(suggestion.id)}
+                        className="delete"
+                      >
+                        Remove
                       </a>
                     </li>
                   ))}
