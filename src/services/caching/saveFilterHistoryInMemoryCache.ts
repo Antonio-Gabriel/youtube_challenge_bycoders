@@ -11,11 +11,18 @@ function getCurrentUser() {
 export async function saveFilterHistoryInMemoryCache({
   search,
 }: InMemoryCache) {
-  const id = await db.histories.add({
+  const historyAlreadyExists = await db.histories.get({
     filterName: search,
     userId: getCurrentUser().id,
-    createdAt: new Date().toLocaleString(),
   });
 
-  return id;
+  if (!historyAlreadyExists) {
+    const id = await db.histories.add({
+      filterName: search,
+      userId: getCurrentUser().id,
+      createdAt: new Date().toLocaleString(),
+    });
+
+    return id;
+  }
 }
