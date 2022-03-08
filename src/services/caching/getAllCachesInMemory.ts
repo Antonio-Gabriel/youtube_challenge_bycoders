@@ -12,11 +12,7 @@ function getCurrentUser() {
 }
 
 export async function getAllCachesInMemory() {
-  const histories = (await db.histories
-    .where({
-      userId: getCurrentUser().id,
-    })
-    .toArray()) as InMemoryCacheProps[];
+  const histories = await db.histories.toArray();
 
   return histories;
 }
