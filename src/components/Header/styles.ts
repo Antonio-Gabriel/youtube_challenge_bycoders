@@ -110,6 +110,7 @@ export const Actions = styled.div`
             background: none !important;
             border: none !important;
             box-shadow: none !important;
+            padding: 0 !important;
 
             img {
               width: 36px;
@@ -161,6 +162,26 @@ export const AutoComplete = styled.div`
 
   ul {
     padding-left: 0 !important;
+  }
+
+  .toComplete {
+    display: flex;
+    justify-content: space-between;
+    color: var(--dark-400);
+    border-radius: 4px;
+
+    .delete {
+      font-size: 12px;
+      text-decoration: underline;
+
+      :hover {
+        color: var(--red) !important;
+      }
+    }
+
+    :hover {
+      background-color: var(--body);
+    }
   }
 
   ul li {
