@@ -9,6 +9,8 @@ interface IOffCanvasProps {
 }
 
 export function OffCanvas({ handleCloseOffcanvas, show }: IOffCanvasProps) {
+  const accessToken = localStorage.getItem("bycoders-accessToken") ?? false;
+
   return (
     <Offcanvas show={show} onHide={handleCloseOffcanvas} placement="start">
       <Offcanvas.Header closeButton>
@@ -25,10 +27,13 @@ export function OffCanvas({ handleCloseOffcanvas, show }: IOffCanvasProps) {
             <BiHome />
             Home
           </Link>
-          <Link to="/histories">
-            <MdCached />
-            History
-          </Link>
+
+          {accessToken && (
+            <Link to="/histories">
+              <MdCached />
+              History
+            </Link>
+          )}
         </div>
       </Offcanvas.Body>
     </Offcanvas>
