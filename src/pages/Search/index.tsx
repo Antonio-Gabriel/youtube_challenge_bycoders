@@ -8,7 +8,7 @@ export function Search() {
   return (
     <>
       <Header filter={searchParams?.get("search_query") ?? ""} />
-      <Results />
+      <Results filter={searchParams?.get("search_query") ?? ""} />
     </>
   );
 }
