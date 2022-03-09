@@ -21,7 +21,7 @@ export function HeroView() {
               was created by three former PayPal employees
             </p>
             <div className="buttons">
-              <Link to="/">
+              <Link to="/home">
                 <button>Start watch the videos</button>
               </Link>
             </div>
