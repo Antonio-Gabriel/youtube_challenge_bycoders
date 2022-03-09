@@ -103,8 +103,10 @@ export function Header({ filter = "" }: IFormProps) {
     if (!search) {
       if (accessToken) {
         getAllCachesInMemory().then((res) => {
-          const caches = res.filter((caches: any) => {
-            return (caches.userId = accessToken);
+          const caches = res.filter((cache: any) => {
+            if (cache.userId === user.id) {
+              return cache;
+            }
           });
 
           setSugestionsInCache(caches);
@@ -153,6 +155,7 @@ export function Header({ filter = "" }: IFormProps) {
                   {sugestions.map((suggestion: any, index: number) => (
                     <li key={index}>
                       <a
+                        href="#"
                         onClick={() => {
                           navigateTo(
                             `/results?search_query=${suggestion.snippet?.title}`
@@ -173,6 +176,7 @@ export function Header({ filter = "" }: IFormProps) {
                   {sugestionsInCache.map((suggestion: any, index: number) => (
                     <li key={index} className="toComplete">
                       <a
+                        href="#"
                         onClick={() => {
                           navigateTo(
                             `/results?search_query=${suggestion.filterName}`
@@ -182,6 +186,7 @@ export function Header({ filter = "" }: IFormProps) {
                         {suggestion.filterName}
                       </a>
                       <a
+                        href="#"
                         onClick={() => handleRemoveHistory(suggestion.id)}
                         className="delete"
                       >
