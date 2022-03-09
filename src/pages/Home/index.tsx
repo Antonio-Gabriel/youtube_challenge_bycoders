@@ -11,6 +11,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 import { Content } from "./styles";
 import { Header } from "../../components/Header";
+import { ENUMS } from "../../redux/actions/types/types";
 import { SmallVideo } from "../../components/SmallVideo";
 import { getVideoServices } from "../../services/getVideosService";
 import { getChannelByIdService } from "../../services/getChannelById";
@@ -25,6 +26,8 @@ export function Home() {
   const [valueList, setValueList] = useState<any>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
+  const accessToken = localStorage.getItem("bycoders-accessToken") ?? "";
+
   useEffect(() => {
     dispatch(getVideoActions());
   }, [dispatch]);
@@ -32,6 +35,15 @@ export function Home() {
   const { totalResult, nextPageToken } = useSelector<IVideoPropsState>(
     (state) => state.videos
   ) as any;
+
+  useEffect(() => {
+    if (!accessToken) {
+      dispatch({
+        type: ENUMS.FAIL,
+        error: "Error",
+      });
+    }
+  }, []);
 
   useEffect(() => {
     getVideoServices(nextPageToken).then((res) => {
@@ -116,7 +128,11 @@ export function Home() {
               loader={
                 <div className="spinner-border text-danger d-block mx-auto text-center"></div>
               }
-              endMessage={<span>Reload the page</span>}
+              endMessage={
+                <span className="mt-2 text-center">
+                  Final popular videos, search new videos
+                </span>
+              }
               className="videos"
             >
               <div className="row">
