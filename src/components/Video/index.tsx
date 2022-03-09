@@ -43,7 +43,7 @@ export function Video({
 
         <div className="channel">
           <img src={channelThumbnail} alt={channelName} />
-          <a>{channelName}</a>
+          <a href="#">{channelName}</a>
         </div>
 
         <ShowMoreText
