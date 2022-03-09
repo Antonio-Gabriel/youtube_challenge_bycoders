@@ -45,7 +45,7 @@ export function Header({ filter = "" }: IFormProps) {
   function handleLogout() {
     dispatch(signOut());
 
-    navigateTo("/login");
+    navigateTo("/");
   }
 
   useEffect(() => {
@@ -123,7 +123,7 @@ export function Header({ filter = "" }: IFormProps) {
         <div className="container">
           <div className="logo">
             <HiMenu onClick={() => setOpenOffCanvas(true)} />
-            <Link to="/login">
+            <Link to="/home">
               <img
                 src="/src/assets/YouTube-White-Full-Color-Logo.wine.svg"
                 alt="Youtube"
