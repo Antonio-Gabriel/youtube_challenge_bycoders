@@ -14,5 +14,6 @@ const videoTypes = {
 
 const ENUMS = Object.freeze(actionTypes);
 const ENUMS_VIDEOS = Object.freeze(videoTypes);
+const ENUMS_VIDEOS_RESULTS = Object.freeze(videoTypes);
 
-export { ENUMS, ENUMS_VIDEOS };
+export { ENUMS, ENUMS_VIDEOS, ENUMS_VIDEOS_RESULTS };
