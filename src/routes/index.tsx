@@ -3,6 +3,7 @@ import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Watch } from "../pages/Watch";
 import { Search } from "../pages/Search";
+import { History } from "../pages/History";
 
 export function Routes() {
   const RoutesSwitch = () =>
@@ -22,6 +23,10 @@ export function Routes() {
       {
         path: "/results",
         element: <Search />,
+      },
+      {
+        path: "/histories",
+        element: <History />,
       },
     ]);
 
