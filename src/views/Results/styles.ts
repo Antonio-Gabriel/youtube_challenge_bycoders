@@ -32,5 +32,9 @@ export const Container = styled.section`
     padding: 2px 0;
 
     margin-top: 0.6rem;
+
+    .videos {
+      overflow: hidden !important;
+    }
   }
 `;
