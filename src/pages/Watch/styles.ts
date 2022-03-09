@@ -134,5 +134,9 @@ export const RelatedCourses = styled.div`
       padding: 10px 4px;
       font-weight: 700;
     }
+
+    .videos {
+      overflow: hidden !important;
+    }
   }
 `;
