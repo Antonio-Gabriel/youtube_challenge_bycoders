@@ -36,3 +36,8 @@ Menu de navegação
 
 
 Outras telas após a execução do mesmo projecto terá o contacto directo
+
+Aproveitando realçar que a API do Youtube tem limite de requisições.
+
+Caso estiver a processar infinitamente é porque o número de requisições foi excedida (API Gateway).
+Vai funcionar novamente após 24h.
