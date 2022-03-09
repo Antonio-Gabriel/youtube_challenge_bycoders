@@ -23,7 +23,7 @@ export function OffCanvas({ handleCloseOffcanvas, show }: IOffCanvasProps) {
       </Offcanvas.Header>
       <Offcanvas.Body>
         <div className="list">
-          <Link to="/">
+          <Link to="/home">
             <BiHome />
             Home
           </Link>
