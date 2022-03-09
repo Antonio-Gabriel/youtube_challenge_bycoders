@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import ShowMoreText from "react-show-more-text";
 import { Header } from "../../components/Header";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { IVideoPropsState } from "../../types/IVideoPropsState";
 
 import {
@@ -13,18 +13,27 @@ import {
   WatchContent,
 } from "./styles";
 
+import moment from "moment";
 import numeral from "numeral";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import { ENUMS } from "../../redux/actions/types/types";
 import { SmallVideo } from "../../components/SmallVideo";
 import { getVideoById } from "../../services/getVideoById";
+import { formatDuration } from "../../utils/formatDuration";
 import { getChannelByIdService } from "../../services/getChannelById";
+import { getUniqueElementsFromList } from "../../utils/getUniqueIdFromList";
+import { getRelatedVideosService } from "../../services/getRelatedVideosService";
 import { getRelatedVideosActions } from "../../redux/actions/getRelatedVideosAction";
 
 export function Watch() {
   const { id } = useParams();
 
   const dispatch = useDispatch();
+  const navigateTo = useNavigate();
+
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [valueList, setValueList] = useState([]) as any;
   const [videoToWatch, setVideoToWatch] = useState([]) as any;
 
   const accessToken = localStorage.getItem("bycoders-accessToken") ?? "";
@@ -33,7 +42,7 @@ export function Watch() {
     dispatch(getRelatedVideosActions(id));
   }, [dispatch]);
 
-  const { videos, nextPageToken } = useSelector<IVideoPropsState>(
+  const { nextPageToken, totalResult } = useSelector<IVideoPropsState>(
     (state) => state.videos
   ) as any;
 
@@ -69,7 +78,68 @@ export function Watch() {
         setVideoToWatch(res)
       );
     });
+
+    getRelatedVideosService(nextPageToken, id).then((res) => {
+      const joinVideoByChannelResponse = res.items.map(async (video: any) => {
+        const channelData = await getChannelByIdService(
+          video.snippet.channelId
+        );
+
+        return {
+          id: video.id,
+          thumbnail: video.snippet.thumbnails.medium.url,
+          duraction: video.contentDetails.duration,
+          title: video.snippet.title,
+          views: video.statistics.viewCount,
+          publishedAt: video.snippet.publishedAt,
+          channelName: channelData.items[0].snippet.title,
+          channelThumbnail: channelData.items[0].snippet.thumbnails.default,
+        };
+      });
+
+      Promise.all(joinVideoByChannelResponse).then((res) => setValueList(res));
+    });
   }, []);
+
+  async function handleCarriesNextVideos() {
+    dispatch(getRelatedVideosActions(id));
+
+    const response = await getRelatedVideosService(nextPageToken, id);
+    const joinVideoByChannelResponse = await response.items.map(
+      async (video: any) => {
+        const channelData = await getChannelByIdService(
+          video.snippet.channelId
+        );
+
+        return {
+          id: video.id,
+          thumbnail: video.snippet.thumbnails.medium.url,
+          duraction: video.contentDetails.duration,
+          title: video.snippet.title,
+          views: video.statistics.viewCount,
+          publishedAt: video.snippet.publishedAt,
+          channelName: channelData.items[0].snippet.title,
+          channelThumbnail: channelData.items[0].snippet.thumbnails.default,
+        };
+      }
+    );
+
+    const nextPage = await Promise.all(joinVideoByChannelResponse).then(
+      (res) => res
+    );
+
+    const margeVideoList = [...valueList, ...nextPage];
+
+    setValueList([...getUniqueElementsFromList(margeVideoList, "id")]);
+
+    if (valueList.length === totalResult) {
+      setHasMore(false);
+    }
+  }
+
+  function handleWatchingVideo(id: string) {
+    navigateTo(`/watch/${id}`);
+  }
 
   return (
     <>
@@ -132,16 +202,40 @@ export function Watch() {
                   </div>
 
                   <div className="col-lg-12 filtered-videos">
-                    <SmallVideo
-                      thumbnail="/src/assets/video.webp"
-                      duraction="13:21"
-                      title="Amapiano Quarantine Mix 2020 ( DJ Maphorisa | Kabza De
-                        Small | JazziDisciples | MFR Souls)"
-                      views="215 mil"
-                      publishedAt="há 1 ano"
-                      channelName="Freshly Baked"
-                      channelThumbnail="/src/assets/channels4_profile.jpg"
-                    />
+                    <InfiniteScroll
+                      dataLength={valueList.length}
+                      next={handleCarriesNextVideos}
+                      hasMore={hasMore}
+                      loader={
+                        <div className="spinner-border text-danger d-block mx-auto text-center"></div>
+                      }
+                      endMessage={
+                        <span className="mt-2 text-center">
+                          Final related videos, search new videos
+                        </span>
+                      }
+                      className="videos"
+                    >
+                      <div className="row">
+                        {valueList.map((video: any) => (
+                          <div
+                            key={video.id}
+                            onClick={() => handleWatchingVideo(video.id)}
+                          >
+                            <SmallVideo
+                              thumbnail={video.thumbnail}
+                              duraction={formatDuration(video.duraction)}
+                              title={video.title}
+                              views={numeral(video.views).format("0.a")}
+                              publishedAt={moment(video.publishedAt).fromNow()}
+                              channelName={video.channelName}
+                              channelThumbnail={video.channelThumbnail.url}
+                              // width={260}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </InfiniteScroll>
                   </div>
                 </div>
               </RelatedCourses>
