@@ -46,7 +46,7 @@ export function SmallVideo({
 
         <div className="channel">
           <img src={channelThumbnail} alt={channelName} />
-          <a>{channelName}</a>
+          <a href="#">{channelName}</a>
         </div>
       </VideoContent>
     </Video>
