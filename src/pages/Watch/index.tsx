@@ -59,7 +59,7 @@ export function Watch() {
     getVideoById(id ?? "").then((res) => {
       const joinVideoByChannelResponse = res.items.map(async (video: any) => {
         const channelData = await getChannelByIdService(
-          video.snippet.channelId
+          video.snippet?.channelId
         );
 
         return {
@@ -81,20 +81,22 @@ export function Watch() {
 
     getRelatedVideosService(nextPageToken, id).then((res) => {
       const joinVideoByChannelResponse = res.items.map(async (video: any) => {
-        const channelData = await getChannelByIdService(
-          video.snippet.channelId
-        );
+        if (video.snippet?.channelId) {
+          const channelData = await getChannelByIdService(
+            video.snippet?.channelId
+          );
 
-        return {
-          id: video.id,
-          thumbnail: video.snippet.thumbnails.medium.url,
-          duraction: video.contentDetails.duration,
-          title: video.snippet.title,
-          views: video.statistics.viewCount,
-          publishedAt: video.snippet.publishedAt,
-          channelName: channelData.items[0].snippet.title,
-          channelThumbnail: channelData.items[0].snippet.thumbnails.default,
-        };
+          return {
+            id: video.id,
+            thumbnail: video.snippet.thumbnails.medium.url,
+            duraction: video.contentDetails.duraction,
+            title: video.snippet.title,
+            views: video.statistics.viewCount,
+            publishedAt: video.snippet.publishedAt,
+            channelName: channelData.items[0].snippet.title,
+            channelThumbnail: channelData.items[0].snippet.thumbnails.default,
+          };
+        }
       });
 
       Promise.all(joinVideoByChannelResponse).then((res) => setValueList(res));
@@ -105,22 +107,24 @@ export function Watch() {
     dispatch(getRelatedVideosActions(id));
 
     const response = await getRelatedVideosService(nextPageToken, id);
-    const joinVideoByChannelResponse = await response.items.map(
+    const joinVideoByChannelResponse = response.items.map(
       async (video: any) => {
-        const channelData = await getChannelByIdService(
-          video.snippet.channelId
-        );
+        if (video.snippet?.channelId) {
+          const channelData = await getChannelByIdService(
+            video.snippet?.channelId
+          );
 
-        return {
-          id: video.id,
-          thumbnail: video.snippet.thumbnails.medium.url,
-          duraction: video.contentDetails.duration,
-          title: video.snippet.title,
-          views: video.statistics.viewCount,
-          publishedAt: video.snippet.publishedAt,
-          channelName: channelData.items[0].snippet.title,
-          channelThumbnail: channelData.items[0].snippet.thumbnails.default,
-        };
+          return {
+            id: video.id,
+            thumbnail: video.snippet.thumbnails.medium.url,
+            duraction: video.contentDetails.duraction,
+            title: video.snippet.title,
+            views: video.statistics.viewCount,
+            publishedAt: video.snippet.publishedAt,
+            channelName: channelData.items[0].snippet.title,
+            channelThumbnail: channelData.items[0].snippet.thumbnails.default,
+          };
+        }
       }
     );
 
